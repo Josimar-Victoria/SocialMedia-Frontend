@@ -7,8 +7,10 @@ import { UilSchedule } from '@iconscout/react-unicons'
 import { UilTimes } from '@iconscout/react-unicons'
 
 import './styles.css'
+import ShareModal from '../shareModal/ShareModal'
 
 const PostShare = () => {
+  const [modalOpened, setModalOpened] = useState(false)
   const [image, setImage] = useState(null)
   const imageRef = useRef()
 
@@ -20,7 +22,7 @@ const PostShare = () => {
       })
     }
   }
-  
+
   return (
     <div className='PostShare'>
       <img src={ProfileImage} alt='' />
@@ -47,7 +49,16 @@ const PostShare = () => {
             <UilSchedule />
             Shedule
           </div>
-          <button className='button ps-button'>Share</button>
+          <button
+            className='button ps-button'
+            onClick={() => setModalOpened(true)}
+          >
+            Share
+          </button>
+          <ShareModal
+            modalOpened={modalOpened}
+            setModalOpened={setModalOpened}
+          />
           <div style={{ display: 'none' }}>
             <input
               type='file'
