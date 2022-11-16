@@ -7,27 +7,71 @@ import { UilSchedule } from '@iconscout/react-unicons'
 import { UilTimes } from '@iconscout/react-unicons'
 
 import './styles.css'
-import ShareModal from '../shareModal/ShareModal'
+import { useDispatch, useSelector } from 'react-redux'
+import { uploadImage, uploadPost } from '../../actions/Upload-action'
 
 const PostShare = () => {
-  const [modalOpened, setModalOpened] = useState(false)
+  const loading = useSelector(state => state.postReducer.uploading)
+  const { user } = useSelector(state => state.authReducer.authData)
+  const serverPublic = process.env.REACT_APP_PUBLIC_FOLDER
+  
   const [image, setImage] = useState(null)
+  const dispatch = useDispatch()
+
+  const desc = useRef()
   const imageRef = useRef()
 
   const onImageChange = event => {
     if (event.target.files && event.target.files[0]) {
       let img = event.target.files[0]
-      setImage({
-        image: URL.createObjectURL(img)
-      })
+      setImage(img)
     }
+  }
+
+  const reset = () => {
+    setImage(null)
+    desc.current.value = ''
+  }
+
+  const handleSubmit = event => {
+    event.preventDefault()
+
+    const newPost = {
+      userId: user._id,
+      desc: desc.current.value
+    }
+
+    if (image) {
+      const data = new FormData()
+      const filename = Date.now() + image.name
+
+      data.append('name', filename)
+      data.append('file', image)
+      newPost.image = filename
+      console.log(newPost)
+
+      try {
+        dispatch(uploadImage(data))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    dispatch(uploadPost(newPost))
+    reset()
   }
 
   return (
     <div className='PostShare'>
-      <img src={ProfileImage} alt='' />
+      <img
+        src={
+          user.coverPicture
+            ? serverPublic + user.profilePicture
+            : serverPublic + 'defaultProfile.png'
+        }
+        alt=''
+      />
       <div>
-        <input type='text' placeholder="What's happening" />
+        <input ref={desc} required type='text' placeholder="What's happening" />
         <div className='postOptions'>
           <div
             className='option'
@@ -51,14 +95,11 @@ const PostShare = () => {
           </div>
           <button
             className='button ps-button'
-            onClick={() => setModalOpened(true)}
+            onClick={handleSubmit}
+            disabled={loading}
           >
-            Share
+            {loading ? 'Uploading...' : 'Share'}
           </button>
-          <ShareModal
-            modalOpened={modalOpened}
-            setModalOpened={setModalOpened}
-          />
           <div style={{ display: 'none' }}>
             <input
               type='file'
@@ -71,7 +112,7 @@ const PostShare = () => {
         {image && (
           <div className='previewImage'>
             <UilTimes onClick={() => setImage(null)} />
-            <img src={image.image} alt='' />
+            <img src={URL.createObjectURL(image)} alt='' />
           </div>
         )}
       </div>
