@@ -18,7 +18,7 @@ const Post = ({ data }) => {
     liked ? setLikes(e => e - 1) : setLikes(e => e + 1)
   }
 
-  console.log({ data })
+  // console.log({ data })
   return (
     <div className='Post'>
       <img

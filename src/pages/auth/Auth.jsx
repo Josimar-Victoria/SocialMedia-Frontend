@@ -98,7 +98,7 @@ const Auth = () => {
 
           <div>
             <input
-              type='text'
+              type='password'
               className='infoInput'
               name='password'
               placeholder='Password'
@@ -107,7 +107,7 @@ const Auth = () => {
             />
             {isSignUp && (
               <input
-                type='text'
+                type='password'
                 className='infoInput'
                 name='confirmpass'
                 placeholder='Confirm Password'
